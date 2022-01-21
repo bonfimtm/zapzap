@@ -10,5 +10,28 @@
   </head>
   <body>
     <h1>ZapZap</h1>
+    <div id="mensagens"></div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+      // Initialize Cloud Firestore through Firebase
+      firebase.initializeApp({
+        apiKey: "AIzaSyC5I6fjorA6RxBco0JMLNGf_5Xr9PKSY8U",
+        authDomain: "zapzap-98ed8.firebaseapp.com",
+        projectId: "zapzap-98ed8",
+      });
+
+      var db = firebase.firestore();
+
+      db.collection("mensagens").onSnapshot((querySnapshot) => {
+        document.querySelector("#mensagens").replaceChildren();
+        querySnapshot.forEach((doc) => {
+          console.log(doc.data());
+          document
+            .querySelector("#mensagens")
+            .append(doc.data().conteudo, document.createElement("p"));
+        });
+      });
+    </script>
   </body>
 </html>
