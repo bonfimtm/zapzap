@@ -10,6 +10,10 @@
   </head>
   <body>
     <h1>ZapZap</h1>
+    <form onsubmit="enviarMensagem(event)">
+      <input type="text" id="conteudo" />
+      <button type="submit">Enviar</button>
+    </form>
     <div id="mensagens"></div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -23,15 +27,33 @@
 
       var db = firebase.firestore();
 
-      db.collection("mensagens").onSnapshot((querySnapshot) => {
-        document.querySelector("#mensagens").replaceChildren();
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data());
-          document
-            .querySelector("#mensagens")
-            .append(doc.data().conteudo, document.createElement("p"));
+      db.collection("mensagens")
+        .orderBy("criacao", "desc")
+        .onSnapshot((querySnapshot) => {
+          document.querySelector("#mensagens").replaceChildren();
+          querySnapshot.forEach((doc) => {
+            console.log(doc.data());
+            document
+              .querySelector("#mensagens")
+              .append(doc.data().conteudo, document.createElement("p"));
+          });
         });
-      });
+
+      function enviarMensagem(event) {
+        event.preventDefault();
+        db.collection("mensagens")
+          .add({
+            conteudo: document.querySelector("#conteudo").value,
+            criacao: new Date(),
+          })
+          .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+            document.querySelector("#conteudo").value = "";
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+          });
+      }
     </script>
   </body>
 </html>
